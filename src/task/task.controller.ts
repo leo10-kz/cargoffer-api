@@ -15,7 +15,14 @@ import { TaskService } from './task.service';
 
 @Controller('task')
 export class TaskController {
+  // Instacia de la clase TaskService para poder usar sus metodos
   constructor(private taskServise: TaskService) {}
+
+  /**
+   * Endpoint para la creacion de tareas
+   * @body Task
+   * @returns Devolvera un JSON con un mensaje y la tarea creada
+   */
   @Post('/')
   async createTask(@Res() res, @Body() task: CreateTaskDto) {
     const response = await this.taskServise.createTask(task);
@@ -25,6 +32,10 @@ export class TaskController {
       .json({ message: 'Created New Task', Task: response });
   }
 
+  /**
+   * Endpoint que devuleve una lista de tareas
+   * @returns Todas las tareas
+   */
   @Get('/')
   async getTasks(@Res() res) {
     const response = await this.taskServise.getTasks();
@@ -32,6 +43,11 @@ export class TaskController {
     return res.status(HttpStatus.OK).json({ Tasks: response });
   }
 
+  /**
+   * Endpoint que para la busqueda de una tarea por ID
+   * @param id {string}
+   * @returns Una tarea especifica
+   */
   @Get('/:id')
   async getTask(@Res() res, @Param('id') id: string) {
     const response = await this.taskServise.getTask(id);
@@ -41,6 +57,12 @@ export class TaskController {
     return res.status(HttpStatus.OK).json({ Task: response });
   }
 
+  /**
+   * Enpoint para actualuzar las tareas
+   * @param id {string} obligatorio
+   * @body task de tipo CreateTasDto
+   * @returns Un JSON con un mensaje y la tarea actualizada
+   */
   @Put('/:id')
   async updateTask(
     @Res() res,
@@ -54,6 +76,11 @@ export class TaskController {
       .json({ message: 'Update successfully', Task: response });
   }
 
+  /**
+   * Endpoint para borrar tareas
+   * @param id {string} obligatorio
+   * @returns un JSON con un mensaje y la tarea borrada
+   */
   @Delete('/:id')
   async deleteTask(@Res() res, @Param('id') id: string) {
     const response = await this.taskServise.deleteTask(id);
