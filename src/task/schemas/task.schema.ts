@@ -6,6 +6,6 @@ export const TaskSchema = new Schema({
   category: String,
   expirationDate: {
     type: Date,
-    default: Date.now(),
+    default: Date.now,
   },
 });
