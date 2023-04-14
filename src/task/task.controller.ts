@@ -2,6 +2,7 @@ import {
   Controller,
   Body,
   Param,
+  Query,
   Get,
   Post,
   Put,
@@ -27,6 +28,11 @@ export class TaskController {
   async createTask(@Res() res, @Body() task: CreateTaskDto) {
     const response = await this.taskServise.createTask(task);
 
+    if (!response) {
+      return res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ error: 'Could not create' });
+    }
     return res
       .status(HttpStatus.OK)
       .json({ message: 'Created New Task', Task: response });
@@ -37,10 +43,15 @@ export class TaskController {
    * @returns Todas las tareas
    */
   @Get('/')
-  async getTasks(@Res() res) {
-    const response = await this.taskServise.getTasks();
+  async getTasks(@Res() res, @Query('name') name: string) {
+    let response: any;
+    if (name) {
+      response = await this.taskServise.getTasks(name);
+    } else {
+      response = await this.taskServise.getTasks();
+    }
 
-    return res.status(HttpStatus.OK).json({ Tasks: response });
+    return res.status(HttpStatus.OK).json({ tasks: response });
   }
 
   /**
@@ -54,7 +65,7 @@ export class TaskController {
 
     if (!response) throw new NotFoundException('Task not found');
 
-    return res.status(HttpStatus.OK).json({ Task: response });
+    return res.status(HttpStatus.OK).json({ task: response });
   }
 
   /**

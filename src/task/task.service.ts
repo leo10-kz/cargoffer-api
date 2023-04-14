@@ -12,8 +12,14 @@ export class TaskService {
   constructor(@InjectModel('Task') private taskModel: Model<ITask>) {}
 
   // Funcion ue devolvera una lista de tareas
-  async getTasks(): Promise<ITask[]> {
-    const tasks = await this.taskModel.find();
+  async getTasks(name?: string): Promise<ITask[]> {
+    let tasks;
+    if (name && typeof name === 'string') {
+      tasks = await this.taskModel.findOne({ name: name });
+      tasks = [tasks];
+    } else {
+      tasks = await this.taskModel.find();
+    }
     return tasks;
   }
 
@@ -32,7 +38,14 @@ export class TaskService {
    * @returns la Tarea
    */
   async createTask(task: CreateTaskDto): Promise<ITask> {
-    const newTask = new this.taskModel(task);
+    const myTask = {
+      name: task.name.toLocaleLowerCase(),
+      description: task.description,
+      category: task.category,
+      expirationDate: task.expirationDate,
+    };
+
+    const newTask = new this.taskModel(myTask);
     const createDone = await newTask.save();
 
     return createDone;
